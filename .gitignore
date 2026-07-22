@@ -6,6 +6,7 @@ dist/
 wheels/
 *.egg-info
 hello.py
+.gitignore
 
 # Virtual environments
 .venv
