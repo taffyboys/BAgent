@@ -2,10 +2,7 @@
 
 import json
 import os
-from pydoc import describe
 import subprocess
-
-from openai.auth import WorkloadIdentity
 
 try:
     import readline
@@ -27,11 +24,11 @@ WORKDIR = Path.cwd()
 client = OpenAI(base_url=os.getenv("OPENAI_BASE_URL"))
 MODEL = os.environ["MODEL_ID"]
 
-SYSTEM = f"You are a coding agent at {WORKDIR}. Use bash to solve tasks. Act, don't explain."
+SYSTEM = f"You are a daily living agent at {WORKDIR}. Sometimes you may use tools to solve tasks. Act, don't explain."
 
 # ── Tool execution ────────────────────────────────────────
 def run_bash(command: str) -> str:
-    dangerous = ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/"]
+    dangerous = ["rm -rf /", "rm -r -fo /", "del -r -fo /","sudo", "shutdown", "reboot", "> /dev/"]
     if any(d in command for d in dangerous):
         return "Error: Dangerous command blocked"
     try:
@@ -123,6 +120,7 @@ def agent_loop(messages: list):
         response = client.chat.completions.create(
             model=MODEL, messages=messages,
             tools=TOOLS, max_tokens=8000,
+            extra_body={"thinking": {"type": "disabled"}}
         )
 
         choice = response.choices[0]
